@@ -1,4 +1,5 @@
 namespace AuthenticateClassLibrary;
+using AuthenticateClassLibrary;
 
 public class ProductModel
 {

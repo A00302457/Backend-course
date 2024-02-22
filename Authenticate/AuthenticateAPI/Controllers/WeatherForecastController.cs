@@ -1,7 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+
+using System.Collections.Generic;
+using System.Linq;
+using AuthenticateAPI.Data;
+using AuthenticateClassLibrary;
 
 namespace AuthenticateAPI.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
