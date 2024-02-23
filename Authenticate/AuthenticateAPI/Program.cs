@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 builder.Services.AddDbContext<IdentityDbContext>(
     options => options.UseInMemoryDatabase("AuthenticateDb"));
 
@@ -27,7 +27,7 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>()
    
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -37,7 +37,7 @@ var app = builder.Build();
 //app.MapIdentityAPI<IdentityUser>();
 app.MapIdentityApi<IdentityUser>();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

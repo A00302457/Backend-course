@@ -9,21 +9,22 @@ using System.Linq;
 using AuthenticateAPI.Data;
 using AuthenticateClassLibrary;
 
+
 namespace AuthenticateAPI.Data
 {
     public class IdentityDBContext : DbContext
     {
-        // create a db context for the database using ToDoListClassLibrary
+       
         public DbSet<ProductModel> Products { get; set; }
         public DbSet<CategoryModel> Categories { get; set; }
         public DbSet<ShoppingCartModel> ShoppingCarts { get; set; }
-
-        public IdentityDBContext() { }
-
-        // referecen for database migration
+        //public Dbset<TestModel> TestModels { get; set; }
+        public IdentityDBContext() { }      
         public IdentityDBContext(DbContextOptions<IdentityDbContext> options) : base(options) {}
 
-        //database configuration
+        
+
+      
        
     }
 

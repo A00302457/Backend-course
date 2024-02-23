@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using AuthenticateAPI.Data;
 using AuthenticateClassLibrary;
+using AuthenticateAPI;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthenticateAPI.Controllers;
 
@@ -17,53 +19,106 @@ namespace AuthenticateAPI.Controllers;
 
         public ShoppingCartController(IdentityDBContext context)
         {
-            this.identitydbcontext = context;
-           // _identityDbContext = identityDbContext;
+           this.identitydbcontext = context;
+            //_identityDbContext = identityDbContext;
 
         }  
-        [HttpGet]
-        public IEnumerable<ShoppingCartModel> Get()
-        {
-            return identitydbcontext.ShoppingCarts.ToArray();
-        }  
-       // [HttpPost("AddToCart/{Id}")]
-        // public async Task<IEnumerable<ShoppingCartModel>> AddToCart(int Id)
-        // {
-        //    // Retrieve the product asynchronously
-        //     var product = await _identityDbContext.Products.FindAsync(Id);
+        [HttpGet(Name = "GetShoppingCart")]
+      
+    //public async Task<ShoppingCartModel> Get(string id)
+    //public async Task<IEnumerable<ProductModel>> Get()
+    public async Task<IEnumerable<ProductModel>> Get(string id)
+    {
+        
+        var userName = User.Identity.Name;       
+        var userShoppingCart = await identitydbcontext.ShoppingCarts
+            .Where(cart => cart.User == userName)
+            .ToListAsync();
+        // var userShoppingCart = await identitydbcontext.FindByNameAsync(User.Identity?.Name ?? string.Empty);
+        //return $"{User.Identity?.Name ?? String.Empty} = {user?.Email ?? String.Empty}";
 
-        //     if (product == null)
-        //     {
-        //         return BadRequest("Product not found");
-        //     }
-
-        //     // Retrieve the current user's email from the claims
-        //     var userEmail = User.FindFirst()?.Value;
-
-        //     // Retrieve the user's shopping cart asynchronously
-        //     var cart = await _identityDbContext.ShoppingCarts
-        //         .Include(sc => sc.Products) // Ensure Products navigation property is loaded
-        //         .FirstOrDefaultAsync(x => x.User == userEmail);
-
-        //     if (cart == null)
-        //     {
-        //         // Create a new shopping cart if it doesn't exist
-        //         cart = new ShoppingCartModel
-        //         {
-        //             User = userEmail,
-        //             Products = new List<ProductModel>()
-        //         };
-        //         _identityDbContext.ShoppingCarts.Add(cart);
-        //     }
-
-        //     // Add the product to the shopping cart
-        //     cart.Products.Add(product);
-
-        //     await _identityDbContext.SaveChangesAsync();
-
-        //     // Return the updated shopping carts
-        //     return await _identityDbContext.ShoppingCarts.Include(sc => sc.Products).ToArrayAsync();
-       // }
-
-        //}
+         return userShoppingCart;
     }
+    [HttpPost("removeItem/{productId}")]
+    public async Task<IEnumerable<ProductModel>> RemoveItem(int productId)
+    {
+        
+        var userName = User.Identity.Name;
+
+      
+        var userShoppingCart = await identitydbcontext.ShoppingCarts
+            .Include(cart => cart.Products)
+            .FirstOrDefaultAsync(cart => cart.User == userName);
+
+        if (userShoppingCart == null)
+        {
+            Response.StatusCode = 404; 
+            return null;
+        }
+
+         var productToRemove = userShoppingCart.Products.FirstOrDefault(p => p.Id == productId);
+
+        if (productToRemove == null)
+        {
+            Response.StatusCode = 404; 
+            return null;
+        }
+
+       
+        userShoppingCart.Products.Remove(productToRemove);
+
+        
+        await identitydbcontext.SaveChangesAsync();
+
+        return userShoppingCart.Products;
+    }
+         
+    [HttpPost("addItem/{productId}")]
+    public async Task<IEnumerable<ProductModel>> AddItem(int productId)
+    {
+       
+        var userEmail = User.Identity?.Name;       
+        var userShoppingCart = await identitydbcontext.ShoppingCarts
+            .Include(cart => cart.Products)
+            .FirstOrDefaultAsync(cart => cart.User == userEmail);
+
+        if (userShoppingCart == null)
+        {
+           
+            userShoppingCart = new ShoppingCartModel
+            {
+                User = userEmail,
+                Products = new List<ProductModel>()
+            };            
+
+          
+            identitydbcontext.ShoppingCarts.Add(userShoppingCart);
+        }
+
+       
+        if (userShoppingCart.Products.Any(p => p.Id == productId))
+        {
+            Response.StatusCode = 400;
+            return null;
+        }
+
+      
+        var productToAdd = await identitydbcontext.Products.FindAsync(productId);
+
+        if (productToAdd == null)
+        {
+            Response.StatusCode = 404;
+            return null;
+        }
+
+       
+        userShoppingCart.Products.Add(productToAdd);
+
+        
+        await identitydbcontext.SaveChangesAsync();
+
+        return userShoppingCart.Products;
+    }
+
+
+}
