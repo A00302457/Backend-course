@@ -25,7 +25,7 @@ namespace AuthenticateAPI.Controllers;
         [HttpGet]
         public async Task<IEnumerable<ProductModel>> GetAllProducts()
         {
-            var allProducts = await identitydbcontext.Products.ToListAsync();
+            var allProducts = await identitydbcontext?.Products.ToListAsync();
             return allProducts;
         }
         [HttpGet("productsByCategory/{categoryId}")]

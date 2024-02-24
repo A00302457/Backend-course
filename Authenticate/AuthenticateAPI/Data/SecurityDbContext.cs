@@ -5,7 +5,7 @@ using AuthenticateClassLibrary;
 
 namespace AuthenticateAPI.Data;
 
-public class SecurityDbContext : IdentityDbContext<IdentityUser>
+public class SecurityDbContext : IdentityDbContext<AppUser>
 {
     public SecurityDbContext(DbContextOptions<SecurityDbContext> options) : base(options) { }
     

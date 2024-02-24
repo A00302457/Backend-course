@@ -17,12 +17,15 @@ namespace AuthenticateAPI.Controllers;
     {
         private readonly IdentityDBContext identitydbcontext;
 
-        public ShoppingCartController(IdentityDBContext context)
+        public ShoppingCartController(IdentityDBContext identitydbcontext)
         {
-           this.identitydbcontext = context;
-            //_identityDbContext = identityDbContext;
+            this.identitydbcontext = identitydbcontext;
+        }
+        // {
+        //     this.identitydbcontext = context;
+        //     //_identitydbcontext = identitydbcontext;
 
-        }  
+        // }  
         [HttpGet(Name = "GetShoppingCart")]
       
     //public async Task<ShoppingCartModel> Get(string id)
@@ -30,7 +33,7 @@ namespace AuthenticateAPI.Controllers;
     public async Task<IEnumerable<ProductModel>> Get(string id)
     {
         
-        var userName = User.Identity.Name;       
+        var userName = User.Identity?.Name ?? string.Empty;       
         var userShoppingCart = await identitydbcontext.ShoppingCarts
             .Where(cart => cart.User == userName)
             .ToListAsync();
@@ -43,7 +46,7 @@ namespace AuthenticateAPI.Controllers;
     public async Task<IEnumerable<ProductModel>> RemoveItem(int productId)
     {
         
-        var userName = User.Identity.Name;
+        var userName = User.Identity?.Name ?? string.Empty;
 
       
         var userShoppingCart = await identitydbcontext.ShoppingCarts
@@ -77,7 +80,7 @@ namespace AuthenticateAPI.Controllers;
     public async Task<IEnumerable<ProductModel>> AddItem(int productId)
     {
        
-        var userEmail = User.Identity?.Name;       
+        var userEmail = User.Identity?.Name ?? string.Empty;       
         var userShoppingCart = await identitydbcontext.ShoppingCarts
             .Include(cart => cart.Products)
             .FirstOrDefaultAsync(cart => cart.User == userEmail);

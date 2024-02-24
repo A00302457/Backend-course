@@ -1,4 +1,5 @@
 using AuthenticateAPI.Data;
+using AuthenticateAPI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +13,7 @@ using Microsoft.AspNetCore.Components.Web;
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddDbContext<IdentityDbContext>(
+builder.Services.AddDbContext<IdentityDBContext>(
     options => options.UseInMemoryDatabase("AuthenticateDb"));
 
 builder.Services.AddDbContext<SecurityDbContext>(
@@ -20,7 +21,7 @@ builder.Services.AddDbContext<SecurityDbContext>(
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+builder.Services.AddIdentityApiEndpoints<AppUser>()
     .AddEntityFrameworkStores<SecurityDbContext>();
 
 
@@ -35,7 +36,7 @@ var app = builder.Build();
 
 //app.MapIdentityAPI<IdentityUser>();
 //app.MapIdentityAPI<IdentityUser>();
-app.MapIdentityApi<IdentityUser>();
+app.MapIdentityApi<AppUser>();
 
 
 if (app.Environment.IsDevelopment())
